@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-public class notice {
+public class Notice {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 

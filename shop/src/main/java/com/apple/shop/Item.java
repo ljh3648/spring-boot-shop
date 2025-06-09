@@ -1,11 +1,15 @@
 package com.apple.shop;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.ToString;
 
 @Entity
+@ToString
+@Data
 public class Item {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
-    public String title;
-    public Integer price;
+    private Long id;
+    private String title;
+    private Integer price;
 }
