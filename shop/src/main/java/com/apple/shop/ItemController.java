@@ -3,12 +3,10 @@ package com.apple.shop;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,4 +29,18 @@ public class ItemController {
         itemRepository.save(item);
         return "redirect:/list";
     }
+
+    @GetMapping("/list/{id}")
+    String detail(@PathVariable Integer id, Model model){
+        Optional<Item> result = itemRepository.findById(id);
+        if (result.isPresent()){
+            System.out.println(result.get());
+            model.addAttribute("item", result.get());
+            return "detail.html";
+        }
+        else{
+            return "redirect:/list";
+        }
+    }
+
 }
