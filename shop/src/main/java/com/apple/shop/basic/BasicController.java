@@ -9,9 +9,8 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 public class BasicController {
-    @GetMapping("/")
     String hello(){
-        return "index.html";
+        return "index";
     }
     @GetMapping("/about")
     @ResponseBody
