@@ -19,7 +19,7 @@
         <p th:text="${i.price}"></p>
         <div>
             <a th:href="@{/list/{id}/edit(id=${i.id})}">✏️</a>
-            <button th:onclick="|deleteItem(${i.id})|">🗑️</button>
+            <span th:onclick="|deleteItem(${i.id})|">🗑️</span>
         </div>
     </div>
 </div>
@@ -29,7 +29,10 @@
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({id: itemId})
-        })
+        }).then(r => r.text())
+          .then(() => {
+            location.reload();
+          })
     }
 </script>
 </body>
