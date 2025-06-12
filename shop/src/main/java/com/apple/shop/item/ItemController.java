@@ -1,11 +1,14 @@
 package com.apple.shop.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -49,6 +52,12 @@ public class ItemController {
         return "redirect:/list";
     }
 
+    @DeleteMapping("/list/{id}/delete")
+    String delete(@RequestBody Map<String, Long> body) {
+        itemService.deleteItem(body.get("id"));
+        return "redirect:/list";
+    }
+
     @GetMapping("/list/{id}")
     String detail(@PathVariable Long id, Model model) {
         Optional<Item> result = itemRepository.findById(id);
@@ -58,5 +67,12 @@ public class ItemController {
         } else {
             return "error.html";
         }
+    }
+
+    @DeleteMapping("/list/delete")
+    ResponseEntity<Map<String, String>> test1(@RequestBody Map<String, Long> body) {
+        System.out.println(body.get("id"));
+        itemService.deleteItem(body.get("id"));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

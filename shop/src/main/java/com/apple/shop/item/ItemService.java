@@ -25,6 +25,10 @@ public class ItemService {
         itemRepository.save(item);
     }
 
+    public void deleteItem(Long id) {
+        itemRepository.deleteById(id);
+    }
+
     void checkItemParm(String title, Integer price) {
         if (title.length() > 20) {
             throw new IllegalArgumentException("아이템 이름이 너무 길어요.");
