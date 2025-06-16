@@ -18,11 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public void createMember(String username, String password, String displayName) {
         Member member = new Member();
         member.setUsername(username);
-        member.setPassword(new BCryptPasswordEncoder().encode(password));
+        member.setPassword(passwordEncoder.encode(password));
         member.setDisplayName(displayName);
         memberRepository.save(member);
     }

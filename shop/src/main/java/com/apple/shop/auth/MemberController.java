@@ -26,9 +26,10 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public String login() {
-//        var result = memberRepository.findAllByUsername("hello");
-//        System.out.println(result.get().getDisplayName());
+    public String login(Authentication auth) {
+        if (auth != null && auth.isAuthenticated()) {
+            return "redirect:/my-page";
+        }
         return "login.html";
     }
 

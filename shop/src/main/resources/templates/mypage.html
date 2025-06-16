@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -11,5 +11,9 @@
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
 <h4>마이 페이지</h4>
+<div sec:authentication="principal">
+</div>
+<div sec:authentication="principal.username">
+</div>
 </body>
 </html>
