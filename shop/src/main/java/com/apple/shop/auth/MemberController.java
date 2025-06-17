@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -35,10 +38,17 @@ public class MemberController {
 
     @GetMapping("/my-page")
     public String myPage(Authentication auth) {
-        System.out.println(auth);
-        System.out.println(auth.getName()); //아이디출력가능
-        System.out.println(auth.isAuthenticated()); //로그인여부 검사가능
+//        System.out.println(auth);
+//        System.out.println(auth.getName()); //아이디출력가능
+//        System.out.println(auth.isAuthenticated()); //로그인여부 검사가능
 //        System.out.println(auth.getAuthorities().contains(new SimpleGrantedAuthority("일반유저")));
         return "mypage.html";
+    }
+
+    //
+    @GetMapping("/user/1")
+    @ResponseBody
+    public MemberDto getUser(){
+        return memberService.getMemberInfo(1L);
     }
 }

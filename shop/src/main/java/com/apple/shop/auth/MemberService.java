@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
+import com.apple.shop.auth.MemberDto;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +41,14 @@ public class MemberService implements UserDetailsService {
         level.add(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new User(user.getUsername(), user.getPassword(), level);
+    }
+
+    public MemberDto getMemberInfo(Long id){
+        Optional<Member> data = memberRepository.findById(id);
+        if(data.isPresent()){
+            var member = data.get();
+            return new MemberDto(member.getUsername(),member.getDisplayName());
+        }
+        return null;
     }
 }

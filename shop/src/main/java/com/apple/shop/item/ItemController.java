@@ -1,6 +1,8 @@
 package com.apple.shop.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,7 @@ public class ItemController {
     String list(Model model) {
         List<Item> result = itemRepository.findAll();
         model.addAttribute("items", result);
-        return "list.html";
+        return "redirect:/list/page/1";
     }
 
     @GetMapping("/write")
@@ -69,5 +71,14 @@ public class ItemController {
         System.out.println(body.get("id"));
         itemService.deleteItem(body.get("id"));
         return ResponseEntity.status(HttpStatus.OK).body("삭제완료");
+    }
+
+    @GetMapping("/list/page/{id}")
+    String getListPage(@PathVariable Integer id, Model model) {
+        Page<Item> pageData = itemRepository.findPageBy(PageRequest.of(id - 1, 5));
+        model.addAttribute("items", pageData);
+        model.addAttribute("currentPage", id);
+        model.addAttribute("totalPages", pageData.getTotalPages());
+        return "list.html";
     }
 }

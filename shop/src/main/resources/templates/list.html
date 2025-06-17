@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link href="/main.css" rel="stylesheet">
+    <link href="/pagination.css" rel="stylesheet">
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
@@ -23,6 +24,20 @@
         </div>
     </div>
 </div>
+<div class="pagination">
+    <a th:if="${currentPage > 1}"
+       th:href="@{/list/page/{p}(p=${currentPage - 1})}">&laquo;</a>
+    <span th:each="p : ${#numbers.sequence(1, totalPages)}">
+    <a th:href="@{/list/page/{p}(p=${p})}"
+       th:classappend="${p == currentPage} ? ' active'">
+      <span th:text="${p}">1</span>
+    </a>
+  </span>
+    <a th:if="${currentPage < totalPages}"
+       th:href="@{/list/page/{p}(p=${currentPage + 1})}">&raquo;</a>
+</div>
+</body>
+</html>
 <script>
     function deleteItem(itemId) {
         fetch('/list/delete', {
@@ -35,5 +50,3 @@
           })
     }
 </script>
-</body>
-</html>
