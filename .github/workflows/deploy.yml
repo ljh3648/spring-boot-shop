@@ -51,3 +51,26 @@ jobs:
             port: ${{ secrets.SSH_PORT || 22 }}
             source: ${{ steps.get_jar_name.outputs.path_with_jar }}
             target: /opt/shop-service/study-spring-be/shop/build/libs/
+        
+        - name: 심볼릭 링크 업데이트 및 서비스 재시작
+          uses: appleboy/ssh-action@v1
+          with:
+            host: ${{ secrets.SSH_HOST_NAME }}
+            username: ${{ secrets.VM_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: ${{ secrets.SSH_PORT || 22 }}
+            script: |
+              TARGET_DIR="/opt/shop-service/study-spring-be/shop/build/libs/"
+              LATEST_JAR_NAME="${{ steps.get_jar_name.outputs.jar_file_only }}
+              SYMLINK_NAME="shop-service-latest.jar"
+
+              cd $TARGET_DIR
+
+              if [ -L "$SYMLINK_NAME" ]; then
+                rm "$SYMLINK_NAME"
+              fi
+
+              ln -s "$LATEST_JAR_NAME" "$SYMLINK_NAME"
+
+              sudo systemctl restart shop-service
+              sudo systemctl status shop-service --no-pager
