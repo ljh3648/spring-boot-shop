@@ -61,7 +61,7 @@ jobs:
             port: ${{ secrets.SSH_PORT || 22 }}
             script: |
               TARGET_DIR="/opt/shop-service/study-spring-be/shop/build/libs/"
-              LATEST_JAR_NAME="${{ steps.get_jar_name.outputs.jar_file_only }}
+              LATEST_JAR_NAME="${{ steps.get_jar_name.outputs.jar_file_only }}"
               SYMLINK_NAME="shop-service-latest.jar"
 
               cd $TARGET_DIR
