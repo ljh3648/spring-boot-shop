@@ -88,7 +88,7 @@ public class ItemController {
     @ResponseBody
     String getURL(@RequestParam String filename){
 //        storageService.getBucketName();
-        var result = storageService.generateSignedURL(filename);
+        String result = storageService.generateSignedURL("item/" + filename);
         System.out.println("filename : " + filename);
         System.out.println(result);
         return result;
