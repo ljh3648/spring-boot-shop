@@ -1,6 +1,5 @@
 HELP.md
 .gradle
-build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -39,3 +38,9 @@ out/
 ### env ###
 **/etc/**
 .env
+
+
+### build ###
+hello-spring/build/
+shop/build/*
+!shop/build/libs/
