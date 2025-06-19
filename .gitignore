@@ -41,6 +41,7 @@ out/
 
 
 ### build ###
-hello-spring/build/
-shop/build/*
+build/
+# hello-spring/build/
+# shop/build/*
 # !shop/build/libs/

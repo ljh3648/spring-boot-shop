@@ -22,6 +22,19 @@ jobs:
           working-directory: shop 
           run: ./gradlew clean build --exclude-task test
 
+
+        - name: VM에 대상 디렉토리 권한 설정
+          uses: appleboy/ssh-action@v1
+          with:
+            host: ${{ secrets.SSH_HOST_NAME }}
+            username: ${{ secrets.VM_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: ${{ secrets.SSH_PORT || 22 }}
+            script: |
+              mkdir -p /opt/shop-service/study-spring-be/shop/build/libs/
+              sudo chown -R ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} /opt/shop-service/study-spring-be/shop/build/libs/
+
+
         - name: Copy files via SSH
           uses: appleboy/scp-action@v1
           with:
