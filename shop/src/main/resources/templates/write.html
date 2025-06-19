@@ -16,5 +16,33 @@
     <button type = "submit">전송</button>
 </form>
 
+<input type="file" onchange="getURL(this);" />
+<script>
+    async function getURL(input) {
+        try {
+            const file = input.files[0];
+            if (!file) return;
+
+            const name = encodeURIComponent(file.name);
+            let res = await fetch('/presigned-url?filename=' + name);
+            if (!res.ok) throw new Error('프리사인드 URL 요청 실패');
+
+            const url = await res.text();
+
+            const uploadRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: file
+            });
+            if (!uploadRes.ok) throw new Error('업로드 실패: ' + await uploadRes.text());
+        } catch (err) {
+            console.error(err);
+            alert('오류 발생: ' + err.message);
+        }
+    }
+</script>
+
 </body>
 </html>

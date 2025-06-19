@@ -1,5 +1,6 @@
 package com.apple.shop.item;
 
+import com.apple.shop.gcp.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class ItemController {
     private final ItemRepository itemRepository; //dependency injection
     private final ItemService itemService;
+    private final StorageService storageService;
 
     @GetMapping("/list")
     String list(Model model) {
@@ -80,5 +82,15 @@ public class ItemController {
         model.addAttribute("currentPage", id);
         model.addAttribute("totalPages", pageData.getTotalPages());
         return "list.html";
+    }
+
+    @GetMapping("/presigned-url")
+    @ResponseBody
+    String getURL(@RequestParam String filename){
+//        storageService.getBucketName();
+        var result = storageService.generateSignedURL(filename);
+        System.out.println("filename : " + filename);
+        System.out.println(result);
+        return result;
     }
 }
