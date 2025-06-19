@@ -1,0 +1,33 @@
+name: Deploy to shop VM
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: 코드 체크아웃
+          uses: actions/checkout@v4
+        
+        - name: JDK 설정 (JAVA 21)
+          uses: actions/setup-java@v3
+          with:
+            java-version: '21'
+            distribution: 'temurin'
+        
+        - name: 서버 빌드
+          working-directory: shop 
+          run: ./gradlew clean build --exclude-task test
+
+        - name: Copy files via SSH
+          uses: appleboy/scp-action@v1
+          with:
+            host: ${{ secrets.SSH_HOST_NAME }}
+            username: ${{ secrets.VM_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: ${{ secrets.SSH_PORT || 22 }}
+            source: shop/build/libs/*.jar
+            target: /opt/shop-service/study-spring-be/shop/build/libs/
