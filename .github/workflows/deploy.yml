@@ -34,6 +34,13 @@ jobs:
               mkdir -p /opt/shop-service/study-spring-be/shop/build/libs/
               sudo chown -R ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} /opt/shop-service/study-spring-be/shop/build/libs/
 
+        - name: 빌드된 JAR 파일 이름 가져오기
+          id: get_jar_name
+          run: |
+            JAR_FILE_PATH=$(find shop/build/libs -name "shop-*.jar" -type f | head -n 1)
+            echo "::set-output name=path_with_jar::${JAR_FILE_PATH}"
+            JAR_FILE_ONLY=$(basename "${JAR_FILE_PATH}")
+            echo "::set-output name=jar_file_only::${JAR_FILE_ONLY}"
 
         - name: Copy files via SSH
           uses: appleboy/scp-action@v1
