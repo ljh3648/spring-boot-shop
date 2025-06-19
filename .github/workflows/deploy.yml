@@ -50,4 +50,4 @@ jobs:
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             port: ${{ secrets.SSH_PORT || 22 }}
             source: ${{ steps.get_jar_name.outputs.path_with_jar }}
-            target: /opt/shop-service/study-spring-be/shop/build/libs/${{ steps.get_jar_name.outputs.jar_file_only }}
+            target: /opt/shop-service/study-spring-be/shop/build/libs/
