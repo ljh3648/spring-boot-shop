@@ -19,7 +19,7 @@ jobs:
             distribution: 'temurin'
         
         - name: 서버 빌드
-          working-directory: shop 
+          # working-directory: shop 
           run: ./gradlew clean build --exclude-task test
 
 
@@ -31,8 +31,8 @@ jobs:
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             port: ${{ secrets.SSH_PORT || 22 }}
             script: |
-              mkdir -p /opt/shop-service/study-spring-be/shop/build/libs/
-              sudo chown -R ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} /opt/shop-service/study-spring-be/shop/build/libs/
+              mkdir -p /opt/spring-boot-shop/build/libs/
+              sudo chown -R ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} /opt/spring-boot-shop/build/libs/
 
         - name: 빌드된 JAR 파일 이름 가져오기
           id: get_jar_name 
@@ -50,7 +50,7 @@ jobs:
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             port: ${{ secrets.SSH_PORT || 22 }}
             source: ${{ steps.get_jar_name.outputs.path_with_jar }}
-            target: /opt/shop-service/study-spring-be/shop/build/libs/
+            target: /opt/spring-boot-shop/build/libs/
         
         - name: 심볼릭 링크 업데이트 및 서비스 재시작
           uses: appleboy/ssh-action@v1
@@ -60,7 +60,7 @@ jobs:
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             port: ${{ secrets.SSH_PORT || 22 }}
             script: |
-              TARGET_DIR="/opt/shop-service/study-spring-be/shop/build/libs/"
+              TARGET_DIR="/opt/spring-boot-shop/build/libs/"
               LATEST_JAR_NAME="${{ steps.get_jar_name.outputs.jar_file_only }}"
               SYMLINK_NAME="shop-service-latest.jar"
 
