@@ -5,72 +5,70 @@ on:
     branches: [ main ]
 
 jobs:
-    build-and-deploy:
-        runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-        steps:
-        - name: 코드 체크아웃
-          uses: actions/checkout@v4
-        
-        - name: JDK 설정 (JAVA 21)
-          uses: actions/setup-java@v3
-          with:
-            java-version: '21'
-            distribution: 'temurin'
-        
-        - name: 서버 빌드
-          # working-directory: shop 
-          run: ./gradlew clean build --exclude-task test
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
 
+      - name: JDK 설정 (Java 21)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-        - name: VM에 대상 디렉토리 권한 설정
-          uses: appleboy/ssh-action@v1
-          with:
-            host: ${{ secrets.SSH_HOST_NAME }}
-            username: ${{ secrets.VM_USER }}
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            port: ${{ secrets.SSH_PORT || 22 }}
-            script: |
-              sudo mkdir -p /opt/spring-boot-shop/build/libs/
-              sudo chown -R ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} /opt/spring-boot-shop/
+      - name: 서버 빌드
+        run: ./gradlew clean build --exclude-task test
 
-        - name: 빌드된 JAR 파일 이름 가져오기
-          id: get_jar_name 
-          run: |
-            JAR_FILE_PATH=$(find build/libs -name "shop-*.jar" -type f | head -n 1)
-            echo "path_with_jar=${JAR_FILE_PATH}" >> $GITHUB_OUTPUT 
-            JAR_FILE_ONLY=$(basename "${JAR_FILE_PATH}")
-            echo "jar_file_only=${JAR_FILE_ONLY}" >> $GITHUB_OUTPUT 
+      - name: VM에 대상 디렉토리 권한 설정
+        uses: appleboy/ssh-action@v1
+        with:
+          host:      ${{ secrets.SSH_HOST_NAME }}
+          username:  ${{ secrets.VM_USER }}
+          key:       ${{ secrets.SSH_PRIVATE_KEY }}
+          port:      ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            sudo mkdir -p /opt/spring-boot-shop/build/libs/
+            sudo chown -R ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} /opt/spring-boot-shop/
 
-        - name: JAR 파일 VM으로 복사
-          uses: appleboy/scp-action@v1
-          with:
-            host: ${{ secrets.SSH_HOST_NAME }}
-            username: ${{ secrets.VM_USER }}
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            port: ${{ secrets.SSH_PORT || 22 }}
-            source: ${{ steps.get_jar_name.outputs.jar_file_only }}
-            target: /opt/spring-boot-shop/
-        
-        - name: 심볼릭 링크 업데이트 및 서비스 재시작
-          uses: appleboy/ssh-action@v1
-          with:
-            host: ${{ secrets.SSH_HOST_NAME }}
-            username: ${{ secrets.VM_USER }}
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            port: ${{ secrets.SSH_PORT || 22 }}
-            script: |
-              TARGET_DIR="/opt/spring-boot-shop/build/libs/"
-              LATEST_JAR_NAME="${{ steps.get_jar_name.outputs.jar_file_only }}"
-              SYMLINK_NAME="shop-service-latest.jar"
+      - name: 빌드된 JAR 파일 이름 가져오기
+        id: get_jar_name
+        run: |
+          JAR_PATH=$(find build/libs -name "shop-*.jar" -type f | head -n 1)
+          echo "path_with_jar=$JAR_PATH" >> $GITHUB_OUTPUT
+          echo "jar_file_only=$(basename $JAR_PATH)" >> $GITHUB_OUTPUT
 
-              cd $TARGET_DIR
+      - name: JAR 파일 VM으로 복사
+        uses: appleboy/scp-action@v1
+        with:
+          host:      ${{ secrets.SSH_HOST_NAME }}
+          username:  ${{ secrets.VM_USER }}
+          key:       ${{ secrets.SSH_PRIVATE_KEY }}
+          port:      ${{ secrets.SSH_PORT || 22 }}
+          source:    ${{ steps.get_jar_name.outputs.path_with_jar }}
+          target:    /opt/spring-boot-shop/
+          # 필요하다면 build/libs 경로를 제거:
+          # strip: 2
 
-              if [ -L "$SYMLINK_NAME" ]; then
-                rm "$SYMLINK_NAME"
-              fi
+      - name: 심볼릭 링크 업데이트 및 서비스 재시작
+        uses: appleboy/ssh-action@v1
+        with:
+          host:      ${{ secrets.SSH_HOST_NAME }}
+          username:  ${{ secrets.VM_USER }}
+          key:       ${{ secrets.SSH_PRIVATE_KEY }}
+          port:      ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            TARGET_DIR="/opt/spring-boot-shop/build/libs/"
+            LATEST_JAR_NAME="${{ steps.get_jar_name.outputs.jar_file_only }}"
+            SYMLINK_NAME="shop-service-latest.jar"
 
-              ln -s "$LATEST_JAR_NAME" "$SYMLINK_NAME"
+            cd "$TARGET_DIR"
 
-              sudo systemctl restart shop-service
-              sudo systemctl status shop-service --no-pager
+            if [ -L "$SYMLINK_NAME" ]; then
+              rm "$SYMLINK_NAME"
+            fi
+
+            ln -s "$LATEST_JAR_NAME" "$SYMLINK_NAME"
+            sudo systemctl restart shop-service
+            sudo systemctl status shop-service --no-pager
