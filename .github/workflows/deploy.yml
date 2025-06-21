@@ -37,7 +37,7 @@ jobs:
         - name: 빌드된 JAR 파일 이름 가져오기
           id: get_jar_name 
           run: |
-            JAR_FILE_PATH=$(find shop/build/libs -name "shop-*.jar" -type f | head -n 1)
+            JAR_FILE_PATH=$(find build/libs -name "shop-*.jar" -type f | head -n 1)
             echo "path_with_jar=${JAR_FILE_PATH}" >> $GITHUB_OUTPUT 
             JAR_FILE_ONLY=$(basename "${JAR_FILE_PATH}")
             echo "jar_file_only=${JAR_FILE_ONLY}" >> $GITHUB_OUTPUT 
