@@ -49,7 +49,8 @@ jobs:
             username: ${{ secrets.VM_USER }}
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             port: ${{ secrets.SSH_PORT || 22 }}
-            source: ${{ steps.get_jar_name.outputs.path_with_jar }}
+            source: build/libs/${{ steps.get_jar_name.outputs.jar_file_only }}
+            strip: 2
             target: /opt/spring-boot-shop/build/libs/
         
         - name: 심볼릭 링크 업데이트 및 서비스 재시작
